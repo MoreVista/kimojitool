@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇文字生成・復号ツール</title>
+</head>
+<body>
+    <h2>奇文字生成・復号ツール</h2>
+    <br>
+    <input type="text" id="inputText" placeholder="文字を入力">
+    <button onclick="encodeText()">平文⇒奇文字</button>
+    <button onclick="decodeText()">奇文字⇒平文</button>
+    <p>変換結果: <span id="outputText"></span></p>
+    <button onclick="copyToClipboard()">コピー</button>
+    <br>
+    <label>
+        <input type="checkbox" id="retryToggle" checked> ランダム生成
+    </label>
+    <br>
+    <label>
+        <input type="checkbox" id="ignoreInvalidToggle"> 表示できない文字も含める
+    </label>
+    
+    <script>
+        function getRandomPair(sum, retry, ignoreInvalid) {
+            let a, b;
+            let maxAttempts = 100;
+            let attempts = 0;
+            
+            do {
+                a = Math.floor(Math.random() * (sum + 1));
+                b = sum - a;
+                attempts++;
+                if (!retry || attempts > maxAttempts) {
+                    return [Math.floor(sum / 2), sum - Math.floor(sum / 2)];
+                }
+            } while (!isValidChar(a, ignoreInvalid) || !isValidChar(b, ignoreInvalid));
+            return [a, b];
+        }
+
+        function isValidChar(code, ignoreInvalid) {
+            if (ignoreInvalid) return true;
+            return code >= 32 && code <= 126; // Printable ASCII範囲
+        }
+
+        function encodeText() {
+            let input = document.getElementById("inputText").value;
+            let retry = document.getElementById("retryToggle").checked;
+            let ignoreInvalid = document.getElementById("ignoreInvalidToggle").checked;
+            let encodedStr = "";
+            
+            for (let char of input) {
+                let code = char.charCodeAt(0);
+                let [num1, num2] = getRandomPair(code, retry, ignoreInvalid);
+                encodedStr += String.fromCharCode(num1) + String.fromCharCode(num2);
+            }
+            document.getElementById("outputText").innerText = encodedStr;
+        }
+
+        function decodeText() {
+            let encodedStr = document.getElementById("outputText").innerText;
+            let decodedStr = "";
+            
+            for (let i = 0; i < encodedStr.length; i += 2) {
+                let num1 = encodedStr.charCodeAt(i);
+                let num2 = encodedStr.charCodeAt(i + 1);
+                decodedStr += String.fromCharCode(num1 + num2);
+            }
+            document.getElementById("outputText").innerText = decodedStr;
+        }
+
+        function copyToClipboard() {
+            let outputText = document.getElementById("outputText").innerText;
+            navigator.clipboard.writeText(outputText).then(() => {
+                alert("コピーしました！");
+            }).catch(err => {
+                alert("コピーに失敗しました: " + err);
+            });
+        }
+    </script>
+</body>
+</html>
