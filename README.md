@@ -1,4 +1,5 @@
 # 奇文字生成・復号ツール
+# https://morevista.github.io/kimojitool/
 ## そもそも奇文字って何?
 全てあなたの所以です。氏によって作られた「奇」という楽曲などに使用された暗号文です。<br>
 https://youtu.be/CEWY8STNciE
